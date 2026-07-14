@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Gestión Humana — Cuadro Legal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js">
+// Desempeño bar chart
+new Chart(document.getElementById('chartDesempeno'), {
+  type: 'bar',
+  data: {
+    labels: ['Pedro', 'Andrea V.', 'Maderlys', 'Lorena', 'Zuley', 'Joan', 'Andrea G.', 'Isabel', 'Nasly', 'Isaac'],
+    datasets: [
+      {
+        label: 'Puntaje final',
+        data: [4.76, 4.60, 4.39, 4.31, 4.28, 4.27, 4.20, 4.14, 4.00, 3.04],
+        backgroundColor: [
+          'rgba(26,158,106,.8)','rgba(26,158,106,.8)',
+          'rgba(37,99,235,.7)','rgba(37,99,235,.7)','rgba(37,99,235,.7)',
+          'rgba(37,99,235,.7)','rgba(37,99,235,.7)','rgba(37,99,235,.7)',
+          'rgba(37,99,235,.7)',
+          'rgba(192,57,43,.8)'
+        ],
+        borderRadius: 4,
+        borderWidth: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' Puntaje final: ' + ctx.parsed.x.toFixed(2) + ' / 5' } }
+    },
+    scales: {
+      x: { min: 0, max: 5, ticks: { color: TEXT2, font:{size:10} }, grid: { color: BORDER },
+        afterDraw: chart => {
+          const ctx2 = chart.ctx;
+          ctx2.save();
+          [3.5, 4.5].forEach(v => {
+            const x = chart.scales.x.getPixelForValue(v);
+            ctx2.beginPath(); ctx2.moveTo(x, chart.chartArea.top); ctx2.lineTo(x, chart.chartArea.bottom);
+            ctx2.strokeStyle = v === 3.5 ? 'rgba(192,57,43,.4)' : 'rgba(26,158,106,.4)';
+            ctx2.lineWidth = 1; ctx2.setLineDash([4,3]); ctx2.stroke();
+          });
+          ctx2.restore();
+        }
+      },
+      y: { ticks: { color: TEXT2, font:{size:11} }, grid: { display: false } }
+    }
+  }
+});
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #0A1B39;
+    --terra:   #DE765D;
+    --black:   #000000;
+    --light:   #F4F4F4;
+
+    --bg:        #F4F4F4;
+    --surface:   #FFFFFF;
+    --surface2:  #EEF0F4;
+    --border:    #DDE1EA;
+
+    --green:   #1A9E6A;
+    --amber:   #C47F10;
+    --red:     #C0392B;
+    --blue:    #2563EB;
+
+    --text:    #0A1B39;
+    --text2:   #4A5E7A;
+    --text3:   #8A99AE;
+
+    --sidebar-w: 210px;
+  }
+
+  body {
+    font-family: 'Nunito Sans', 'Avenir Next', Avenir, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    font-size: 14px;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 22px 18px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .logo-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .logo-sq {
+    width: 28px; height: 28px;
+    border: 2.5px solid #fff;
+    display: flex; align-items: flex-end; justify-content: flex-start;
+    padding: 3px; flex-shrink: 0;
+  }
+  .logo-sq-inner { width: 9px; height: 9px; background: #fff; }
+  .logo-text { font-size: 13px; font-weight: 800; letter-spacing: .05em; color: #fff; line-height: 1.2; }
+  .conf-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(222,118,93,.2); border: 1px solid rgba(222,118,93,.4);
+    border-radius: 4px; padding: 3px 8px;
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #F0A897;
+  }
+  nav { flex: 1; padding: 14px 10px; }
+  .nav-section { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.3); padding: 0 8px; margin: 14px 0 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 7px;
+    font-size: 13px; font-weight: 600; color: rgba(255,255,255,.55);
+    cursor: pointer; transition: all .15s; margin-bottom: 2px;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+  .nav-item.active { background: rgba(222,118,93,.15); color: var(--terra); border-left: 3px solid var(--terra); padding-left: 7px; }
+  .nav-item .icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; background: var(--terra); color: #fff; padding: 1px 6px; border-radius: 10px; }
+  .sidebar-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.07); font-size: 10px; color: rgba(255,255,255,.3); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* Alert bar */
+  .alert-bar {
+    background: #FEF1EF;
+    border-bottom: 1px solid #F5C5BC;
+    padding: 9px 28px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .alert-bar-label { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--red); flex-shrink: 0; }
+  .alert-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid #F5C5BC; color: #922B21; background: #FDDBD7; white-space: nowrap; font-weight: 600; }
+  .alert-pill.amber { border-color: #F5D49A; color: #7D5800; background: #FEF4D9; }
+
+  /* Page header */
+  .page-header { padding: 24px 28px 0; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 0; }
+  .page-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--terra); margin-bottom: 4px; }
+  .page-title { font-size: 22px; font-weight: 800; color: var(--navy); }
+  .page-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
+  .date-badge { font-size: 11px; color: var(--text2); background: var(--surface2); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
+
+  /* Content */
+  .content { padding: 20px 28px 40px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* KPI row */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px 16px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-card::after { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--kpi-c, var(--terra)); border-radius: 10px 10px 0 0; }
+  .kpi-label { font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+  .kpi-value { font-size: 24px; font-weight: 800; color: var(--kpi-c, var(--navy)); line-height: 1; }
+  .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 5px; }
+
+  /* Grids */
+  .grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-3   { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid-6040 { display: grid; grid-template-columns: 60% 1fr; gap: 14px; margin-bottom: 14px; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .mb14 { margin-bottom: 14px; }
+  .card-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--terra); margin-bottom: 4px; }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+
+  /* Tables */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tbl th { font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); padding: 0 10px 10px; text-align: left; border-bottom: 2px solid var(--border); }
+  .tbl td { padding: 9px 10px; border-bottom: 1px solid var(--surface2); color: var(--text2); vertical-align: middle; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--navy); font-weight: 700; }
+  .tbl tr:hover td { background: var(--surface2); }
+
+  /* Badges */
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+  .bg-green  { background: #D1FAE5; color: #065F46; }
+  .bg-red    { background: #FEE2E2; color: #991B1B; }
+  .bg-amber  { background: #FEF3C7; color: #92400E; }
+  .bg-blue   { background: #DBEAFE; color: #1E40AF; }
+  .bg-terra  { background: #FDEAE5; color: #9B3B26; }
+  .bg-gray   { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .bg-navy   { background: #E8EDF5; color: var(--navy); }
+
+  /* Bar inline */
+  .bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .bar-bg { flex: 1; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; min-width: 36px; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-pct { font-size: 10px; color: var(--text3); min-width: 28px; text-align: right; font-weight: 700; }
+
+  /* Chart containers */
+  .chart-box canvas { max-height: 220px; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:1px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-dot { position:absolute; left:-21px; top:4px; width:10px; height:10px; border-radius:50%; border:2px solid var(--surface); }
+  .tl-green { background: var(--green); }
+  .tl-red   { background: var(--red); }
+  .tl-amber { background: var(--amber); }
+  .tl-pulse { background: var(--terra); box-shadow: 0 0 0 4px rgba(222,118,93,.2); animation: tpulse 2s infinite; }
+  @keyframes tpulse { 0%,100%{box-shadow:0 0 0 4px rgba(222,118,93,.2);} 50%{box-shadow:0 0 0 8px rgba(222,118,93,.07);} }
+  .tl-mes   { font-size: 10px; color: var(--text3); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; font-weight: 700; }
+  .tl-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .tl-desc  { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+
+  /* Alert cards */
+  .ac { border-left: 3px solid; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .ac-red   { border-color: var(--red);   background: #FEF2F2; }
+  .ac-amber { border-color: var(--amber); background: #FFFBEB; }
+  .ac-name  { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .ac-desc  { font-size: 11px; color: var(--text2); margin-top: 5px; line-height: 1.6; }
+
+  /* Stat rows */
+  .sr { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--surface2); font-size:12px; color:var(--text2); }
+  .sr:last-child { border-bottom:none; }
+  .sr-val { font-weight:700; color:var(--navy); }
+
+  /* Open banner */
+  .open-banner {
+    background: #FEF6F4; border: 1px solid #F5C5B2;
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .open-dot { width:10px; height:10px; border-radius:50%; background:var(--terra); flex-shrink:0; animation: tpulse 2s infinite; }
+  .open-title { font-size:13px; font-weight:700; color:var(--terra); }
+  .open-sub   { font-size:11px; color:var(--text2); margin-top:2px; }
+
+  .divider { border:none; border-top:1px solid var(--border); margin:14px 0; }
+  .note { font-size:10px; color:var(--text3); margin-top:8px; line-height:1.5; }
+
+  @media (max-width: 900px) {
+    .grid-2,.grid-3,.grid-6040 { grid-template-columns: 1fr; }
+    :root { --sidebar-w: 58px; }
+    .sidebar .nav-item span, .logo-text, .conf-tag, .sidebar-footer, .nav-section { display:none; }
+    .nav-item { justify-content: center; }
+    .logo-mark { justify-content: center; }
+  }
+  @media (max-width: 600px) {
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .page-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-sq"><div class="logo-sq-inner"></div></div>
+      <div class="logo-text">CUADRO<br>LEGAL</div>
+    </div>
+    <div class="conf-tag">🔒 Confidencial · Socios</div>
+  </div>
+  <nav>
+    <div class="nav-section">Principal</div>
+    <button class="nav-item active" onclick="showPanel('resumen',this)"><span class="icon">◈</span><span>Resumen</span></button>
+    <div class="nav-section">Indicadores</div>
+    <button class="nav-item" onclick="showPanel('compensacion',this)"><span class="icon">◎</span><span>Compensación</span></button>
+    <button class="nav-item" onclick="showPanel('rotacion',this)"><span class="icon">↻</span><span>Rotación</span></button>
+    <button class="nav-item" onclick="showPanel('seleccion',this)"><span class="icon">◉</span><span>Selección</span></button>
+    <button class="nav-item" onclick="showPanel('desempeno',this)"><span class="icon">◐</span><span>Desempeño <span class="nav-badge">5</span></span></button>
+    <button class="nav-item" onclick="showPanel('alertas',this)"><span class="icon">⚑</span><span>Alertas <span class="nav-badge">4</span></span></button>
+  </nav>
+  <div class="sidebar-footer">Corte: 19 jun 2026</div>
+</aside>
+
+<main class="main">
+
+  <!-- Alert bar -->
+  <div class="alert-bar">
+    <span class="alert-bar-label">⚑ Alertas activas</span>
+    <span class="alert-pill">🔴 Isaac Plaza — Motivación baja</span>
+    <span class="alert-pill">🔴 Nasly Pérez — Indicadores medios</span>
+    <span class="alert-pill amber">🟡 Isabel Piedrahita — Vinculación</span>
+    <span class="alert-pill amber">🟡 Zuley Padilla — Claridad de rol</span>
+  </div>
+
+  <!-- ══ RESUMEN ══ -->
+  <div id="resumen" class="panel active">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Gestión Humana · S1 2026</div><div class="page-title">Resumen ejecutivo</div><div class="page-sub">Panorama general del equipo</div></div>
+      <div class="date-badge">Corte 19 jun 2026</div>
+    </div>
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Headcount activo</div><div class="kpi-value">10</div><div class="kpi-sub">+ 1 por confirmar</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Clima laboral</div><div class="kpi-value" style="color:var(--green)">8/9</div><div class="kpi-sub">percepciones positivas</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Rotación acum. 2026</div><div class="kpi-value" style="color:var(--amber)">43%</div><div class="kpi-sub">5 salidas · ene–jun</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--red)"><div class="kpi-label">Alertas activas</div><div class="kpi-value" style="color:var(--red)">4</div><div class="kpi-sub">seguimiento requerido</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--terra)"><div class="kpi-label">Comp. total mensual</div><div class="kpi-value" style="color:var(--terra)">$54.4M</div><div class="kpi-sub">base + bonos + aux.</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--blue)"><div class="kpi-label">Procesos selección S1</div><div class="kpi-value" style="color:var(--blue)">8</div><div class="kpi-sub">1 abierto actualmente</div></div>
+      </div>
+      <div class="grid-6040">
+        <div class="card mb14">
+          <div class="card-eyebrow">Espacios 1 a 1 · Mayo 2026</div>
+          <div class="card-title">Estado del equipo por dimensión</div>
+          <div class="chart-box" style="height:200px"><canvas id="chartRadar"></canvas></div>
+        </div>
+        <div class="card mb14">
+          <div class="card-eyebrow">Headcount</div>
+          <div class="card-title">Distribución por nivel</div>
+          <div class="chart-box" style="height:160px"><canvas id="chartNivel"></canvas></div>
+          <div class="note" style="margin-top:10px">Dirección concentra el 53% del costo total con 3 personas.</div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-eyebrow">Equipo</div><div class="card-title">Antigüedad activos</div>
+          <div class="sr"><span>Pedro P. Henao</span><span class="sr-val">51.8 m</span></div>
+          <div class="sr"><span>Andrea C. Villa</span><span class="sr-val">44.9 m</span></div>
+          <div class="sr"><span>Isabel Piedrahita</span><span class="sr-val">17.1 m</span></div>
+          <div class="sr"><span>Nasly Pérez</span><span class="sr-val">15.5 m</span></div>
+          <div class="sr"><span>Isaac Plaza</span><span class="sr-val">13.0 m</span></div>
+          <div class="sr"><span>Zuley Padilla</span><span class="sr-val">10.7 m</span></div>
+          <div class="sr"><span>Lorena Bedoya</span><span class="sr-val">4.7 m</span></div>
+          <div class="sr"><span>Maderlys / Paola / Joan</span><span class="sr-val">~3 m</span></div>
+          <div class="note">Prom. sin fundadores: <strong style="color:var(--navy)">12.7 meses</strong></div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Plan de desarrollo</div><div class="card-title">Necesidades de formación</div>
+          <div class="sr"><span>Litigio laboral</span><span class="badge bg-terra">Jurídico</span></div>
+          <div class="sr"><span>Tributario básico</span><span class="badge bg-green">✓ Capacitación jun</span></div>
+          <div class="sr"><span>Derecho probatorio</span><span class="badge bg-terra">Jurídico</span></div>
+          <div class="sr"><span>Comercial / B2B</span><span class="badge bg-amber">Comercial</span></div>
+          <div class="sr"><span>Negociación</span><span class="badge bg-amber">Comercial</span></div>
+          <div class="sr"><span>Redacción profesional</span><span class="badge bg-blue">Habilidades</span></div>
+          <div class="sr"><span>Fact. moneda extranjera</span><span class="badge bg-gray">Adm.</span></div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Próximas acciones</div><div class="card-title">Prioridades</div>
+          <div class="sr"><span>Seguimiento Isaac Plaza</span><span class="badge bg-red">Esta semana</span></div>
+          <div class="sr"><span>Seguimiento Nasly Pérez</span><span class="badge bg-red">Esta semana</span></div>
+          <div class="sr"><span>Formalizar vinculación Isabel</span><span class="badge bg-amber">30 días</span></div>
+          <div class="sr"><span>Descripción cargo Zuley (y todos)</span><span class="badge bg-green">✓ Socialización jun</span></div>
+          <div class="sr"><span>Cerrar proceso reemplazo Ana</span><span class="badge bg-terra">En curso</span></div>
+          <div class="sr"><span>Confirmar María Paz</span><span class="badge bg-terra">Pendiente</span></div>
+          <div class="sr"><span>Capacitación tributaria básica</span><span class="badge bg-terra">Últ. semana jun</span></div>
+          <div class="sr"><span>Reunión equipo completo</span><span class="badge bg-green">✓ Jun · continúa mensual</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ COMPENSACIÓN ══ -->
+  <div id="compensacion" class="panel">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Confidencial · Socios</div><div class="page-title">Compensación</div><div class="page-sub">Salario base · Bono no constitutivo de salario · Auxilio de transporte · 2026</div></div>
+      <div class="date-badge">Vigente jul 2026</div>
+    </div>
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Nómina base mensual</div><div class="kpi-value">$39.3M</div><div class="kpi-sub">10 personas · vigente jul</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--terra)"><div class="kpi-label">Bonos no const. salario</div><div class="kpi-value" style="color:var(--terra)">$15.3M</div><div class="kpi-sub">vigente jul 2026</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Auxilio de transporte</div><div class="kpi-value" style="color:var(--green)">$800K</div><div class="kpi-sub">4 personas con derecho</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Compensación total</div><div class="kpi-value">$55.4M</div><div class="kpi-sub">base + bonos + aux.</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Peso bono / total</div><div class="kpi-value" style="color:var(--amber)">27.6%</div><div class="kpi-sub">variable no prestacional</div></div>
+      </div>
+
+      <!-- Tabla vigente julio -->
+      <div class="card mb14" style="overflow-x:auto">
+        <div class="card-eyebrow">Vigente desde julio 2026</div>
+        <div class="card-title">Compensación mensual por persona</div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Nombre</th><th>Cargo</th><th>Nivel</th><th class="num">Salario base</th><th class="num">Bono mensual</th><th class="num">Aux. transporte</th><th class="num">Total mensual</th><th>% bono</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pedro P. Henao</td><td>Gerente / Socio</td><td><span class="badge bg-terra">Dirección</span></td><td class="num">$7,000,000</td><td class="num">$4,000,000</td><td class="num">—</td><td class="num">$11,000,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:36%;background:var(--terra)"></div></div><span class="bar-pct">36%</span></div></td></tr>
+            <tr><td>Isabel Piedrahita</td><td>Socia — P. Intelectual</td><td><span class="badge bg-terra">Dirección</span></td><td class="num">$6,000,000</td><td class="num">$3,500,000</td><td class="num">—</td><td class="num">$9,500,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:37%;background:var(--terra)"></div></div><span class="bar-pct">37%</span></div></td></tr>
+            <tr><td>Andrea C. Villa</td><td>Directora Administrativa</td><td><span class="badge bg-terra">Dirección</span></td><td class="num">$5,500,000</td><td class="num">$3,000,000</td><td class="num">—</td><td class="num">$8,500,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:35%;background:var(--terra)"></div></div><span class="bar-pct">35%</span></div></td></tr>
+            <tr><td>Nasly Pérez</td><td>Directora de Marketing</td><td><span class="badge bg-blue">Jefatura</span></td><td class="num">$5,500,000</td><td class="num">$1,000,000</td><td class="num">—</td><td class="num">$6,500,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%;background:var(--blue)"></div></div><span class="bar-pct">15%</span></div></td></tr>
+            <tr><td>Zuley Padilla</td><td>Abogada AJP</td><td><span class="badge bg-green">Profesional</span></td><td class="num">$3,500,000</td><td class="num">$1,300,000</td><td class="num">—</td><td class="num">$4,800,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:27%;background:var(--green)"></div></div><span class="bar-pct">27%</span></div></td></tr>
+            <tr><td>Isaac Plaza</td><td>BDR / Marketing</td><td><span class="badge bg-green">Profesional</span></td><td class="num">$3,200,000</td><td class="num">$550,000</td><td class="num">—</td><td class="num">$3,750,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:15%;background:var(--green)"></div></div><span class="bar-pct">15%</span></div></td></tr>
+            <tr><td>Paola Gómez</td><td>Auxiliar Jurídica</td><td><span class="badge bg-amber">Auxiliar</span></td><td class="num">$2,300,000</td><td class="num">$700,000</td><td class="num">$200,000</td><td class="num">$3,200,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:22%;background:var(--amber)"></div></div><span class="bar-pct">22%</span></div></td></tr>
+            <tr style="background:rgba(222,118,93,.04)"><td><strong>Lorena Bedoya</strong></td><td>Auxiliar Jurídica</td><td><span class="badge bg-amber">Auxiliar</span></td><td class="num"><strong>$2,300,000</strong></td><td class="num"><strong>$700,000</strong></td><td class="num">$200,000</td><td class="num"><strong>$3,200,000</strong></td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:22%;background:var(--terra)"></div></div><span class="bar-pct" style="color:var(--terra)">22% ↑</span></div></td></tr>
+            <tr><td>Maderlys Pérez</td><td>Auxiliar Administrativa</td><td><span class="badge bg-amber">Auxiliar</span></td><td class="num">$2,000,000</td><td class="num">$500,000</td><td class="num">$200,000</td><td class="num">$2,700,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:19%;background:var(--amber)"></div></div><span class="bar-pct">19%</span></div></td></tr>
+            <tr><td>Joan Carmona</td><td>Auxiliar Jurídico</td><td><span class="badge bg-amber">Auxiliar</span></td><td class="num">$2,000,000</td><td class="num">$500,000</td><td class="num">$200,000</td><td class="num">$2,700,000</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:19%;background:var(--amber)"></div></div><span class="bar-pct">19%</span></div></td></tr>
+          </tbody>
+        </table>
+        <div class="note">Lorena Bedoya: ajuste salarial vigente desde jul-2026 como reconocimiento por desempeño (puntaje 4.31/5, 4° en ranking). Bono no constitutivo de salario: no genera prestaciones sociales. Auxilio de transporte: aplica a quienes devengan ≤ 2 SMMLV ($2,847,000 en 2026).</div>
+      </div>
+
+      <!-- Tabla histórica mensual -->
+      <div class="card mb14" style="overflow-x:auto">
+        <div class="card-eyebrow">Histórico ene–may 2026</div>
+        <div class="card-title">Bono no constitutivo de salario — valor mensual real</div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Nombre</th><th class="num">Ene</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Abr</th><th class="num">May</th><th class="num">Total S1</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pedro P. Henao</td><td class="num">$4,000,000</td><td class="num">$4,000,000</td><td class="num">$4,000,000</td><td class="num">$4,000,000</td><td class="num">$4,000,000</td><td class="num">$20,000,000</td></tr>
+            <tr><td>Isabel Piedrahita</td><td class="num">$3,500,000</td><td class="num">$3,500,000</td><td class="num">$3,500,000</td><td class="num">$3,500,000</td><td class="num">$3,500,000</td><td class="num">$17,500,000</td></tr>
+            <tr><td>Andrea C. Villa</td><td class="num">$3,000,000</td><td class="num">$3,000,000</td><td class="num">$3,000,000</td><td class="num">$3,000,000</td><td class="num">$3,000,000</td><td class="num">$15,000,000</td></tr>
+            <tr><td>Nasly Pérez</td><td class="num">$1,000,000</td><td class="num">$1,000,000</td><td class="num">$1,000,000</td><td class="num">$1,000,000</td><td class="num">$1,000,000</td><td class="num">$5,000,000</td></tr>
+            <tr><td>Zuley Padilla</td><td class="num">$1,300,000</td><td class="num">$1,300,000</td><td class="num">$1,300,000</td><td class="num">$1,300,000</td><td class="num">$1,300,000</td><td class="num">$6,500,000</td></tr>
+            <tr><td>Isaac Plaza</td><td class="num">$550,000</td><td class="num">$550,000</td><td class="num">$550,000</td><td class="num">$550,000</td><td class="num">$550,000</td><td class="num">$2,750,000</td></tr>
+            <tr><td>Lorena Bedoya</td><td class="num">$83,333</td><td class="num">$500,000</td><td class="num">$500,000</td><td class="num">$500,000</td><td class="num">$500,000</td><td class="num">$2,083,333</td></tr>
+            <tr><td>Maderlys Pérez</td><td class="num">—</td><td class="num">—</td><td class="num">$216,667</td><td class="num">$500,000</td><td class="num">$500,000</td><td class="num">$1,216,667</td></tr>
+            <tr><td>Paola Gómez</td><td class="num">—</td><td class="num">—</td><td class="num">$210,000</td><td class="num">$700,000</td><td class="num">$700,000</td><td class="num">$1,610,000</td></tr>
+            <tr><td>Joan Carmona</td><td class="num">—</td><td class="num">—</td><td class="num">$100,000</td><td class="num">$500,000</td><td class="num">$500,000</td><td class="num">$1,100,000</td></tr>
+            <tr style="background:var(--surface2);font-weight:600"><td><strong>Total mensual</strong></td><td class="num">$13,433,333</td><td class="num">$13,850,000</td><td class="num">$14,376,667</td><td class="num">$15,550,000</td><td class="num">$15,550,000</td><td class="num">$72,760,000</td></tr>
+          </tbody>
+        </table>
+        <div class="note">Maderlys, Paola y Joan: bonos parciales en marzo (primer mes completo con bono). Lorena: bono proporcional en enero (ingresó el 26/ene). Los guiones (—) corresponden a meses previos al ingreso o sin bono registrado.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-eyebrow">Costo mensual total</div>
+          <div class="card-title">Distribución por nivel — vigente jul 2026</div>
+          <div class="chart-box" style="height:200px"><canvas id="chartCompDonut"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Estructura salarial</div>
+          <div class="card-title">Rangos por nivel (base) — vigente jul 2026</div>
+          <table class="tbl" style="margin-top:4px">
+            <thead><tr><th>Nivel</th><th class="num">Mínimo</th><th class="num">Máximo</th><th class="num">Prom. c/bono</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge bg-terra">Dirección</span></td><td class="num">$5,500,000</td><td class="num">$7,000,000</td><td class="num">$9,667,000</td></tr>
+              <tr><td><span class="badge bg-blue">Jefatura</span></td><td class="num">$5,500,000</td><td class="num">$5,500,000</td><td class="num">$6,500,000</td></tr>
+              <tr><td><span class="badge bg-green">Profesional</span></td><td class="num">$3,200,000</td><td class="num">$3,500,000</td><td class="num">$4,275,000</td></tr>
+              <tr><td><span class="badge bg-amber">Auxiliar</span></td><td class="num">$2,000,000</td><td class="num">$2,300,000</td><td class="num">$3,025,000</td></tr>
+            </tbody>
+          </table>
+          <hr class="divider">
+          <div class="card-eyebrow">Ajuste salarial jul 2026</div>
+          <div class="sr"><span>Lorena Bedoya — reconocimiento desempeño</span><span><span class="badge bg-green">↑ $300K base · ↑ $200K bono</span></span></div>
+          <div class="sr"><span>Nasly: bono bajo vs. nivel de jefatura</span><span><span class="badge bg-amber">15% vs 35% Dirección</span></span></div>
+        </div>
+      </div>
+    </div>
+
+  <!-- ══ ROTACIÓN ══ -->
+  <div id="rotacion" class="panel">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Gestión Humana</div><div class="page-title">Rotación</div><div class="page-sub">Headcount · Salidas · Tendencia mensual · Ene 2025 – Jun 2026</div></div>
+    </div>
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--red)"><div class="kpi-label">Rotación anual 2025</div><div class="kpi-value" style="color:var(--red)">79%</div><div class="kpi-sub">11 salidas / 13.9 hc prom</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Rotación acum. 2026</div><div class="kpi-value" style="color:var(--amber)">43%</div><div class="kpi-sub">5 salidas ene–jun</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Headcount actual</div><div class="kpi-value">10</div><div class="kpi-sub">+ 1 por confirmar</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Duración prom. histórica</div><div class="kpi-value" style="color:var(--green)">15 m</div><div class="kpi-sub">todos los períodos</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Duración prom. 2026</div><div class="kpi-value" style="color:var(--amber)">10.3 m</div><div class="kpi-sub">prom. 4 salidas voluntarias + 1 PP</div></div>
+      </div>
+      <div class="card mb14">
+        <div class="card-eyebrow">Tendencia</div><div class="card-title">Headcount y salidas — Ene 2025 a Jun 2026</div>
+        <div class="chart-box" style="height:230px"><canvas id="chartRotacion"></canvas></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-eyebrow">2026</div><div class="card-title">Salidas — detalle y causa</div>
+          <table class="tbl">
+            <thead><tr><th>Nombre</th><th>Ingreso</th><th>Retiro</th><th>Meses</th><th>Causa</th></tr></thead>
+            <tbody>
+              <tr><td>Rubén D. Gómez</td><td>jul-25</td><td>ene-26</td><td>6.5</td><td><span class="badge bg-blue">Retiro voluntario</span></td></tr>
+              <tr><td>Carlos Santamaría</td><td>ene-26</td><td>mar-26</td><td>1.8</td><td><span class="badge bg-red">No superó PP</span></td></tr>
+              <tr><td>Laura C. Duque</td><td>feb-24</td><td>mar-26</td><td>25.3</td><td><span class="badge bg-blue">Retiro voluntario</span></td></tr>
+              <tr><td>Ana M. Chica</td><td>oct-25</td><td>jun-26</td><td>7.7</td><td><span class="badge bg-blue">Retiro voluntario</span></td></tr>
+            </tbody>
+          </table>
+          <div class="note">Las 4 salidas por retiro voluntario señalan la importancia de continuar los espacios 1 a 1 para detectar señales de desvinculación a tiempo.</div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Histórico</div><div class="card-title">Causa de salida</div>
+          <div class="chart-box" style="height:170px"><canvas id="chartCausa"></canvas></div>
+          <hr class="divider">
+          <div class="sr"><span>No superó período de prueba</span><span><span class="badge bg-red">1 — Santamaría</span></span></div>
+          <div class="sr"><span>Meses sin salidas (abr–may 26)</span><span><span class="badge bg-green">Estabilización</span></span></div>
+          <div class="sr"><span>Picos de salida</span><span class="sr-val">Jun-25 y Mar-26</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SELECCIÓN ══ -->
+  <div id="seleccion" class="panel">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Reclutamiento</div><div class="page-title">Selección</div><div class="page-sub">Procesos de vinculación · Semestre 1 · 2026</div></div>
+    </div>
+    <div class="content">
+      <div class="open-banner">
+        <div class="open-dot"></div>
+        <div><div class="open-title">Proceso abierto — Auxiliar Jurídico (reemplazo Ana María Chica)</div><div class="open-sub">Retirada 11 jun 2026 · Nivel auxiliar · $2,000,000 base + bono en rampa + auxilio de transporte</div></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Total procesos S1 2026</div><div class="kpi-value">8</div><div class="kpi-sub">ene–jun 2026</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Cerrados con ingreso</div><div class="kpi-value" style="color:var(--green)">5</div><div class="kpi-sub">activos y evaluados</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--red)"><div class="kpi-label">No superó período prueba</div><div class="kpi-value" style="color:var(--red)">1</div><div class="kpi-sub">Carlos Santamaría</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Sin contratado registrado</div><div class="kpi-value" style="color:var(--amber)">2</div><div class="kpi-sub">litigios + AJP</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--terra)"><div class="kpi-label">Proceso activo</div><div class="kpi-value" style="color:var(--terra)">1</div><div class="kpi-sub">reemplazo Ana María</div></div>
+      </div>
+      <div class="grid-6040">
+        <div class="card mb14">
+          <div class="card-eyebrow">Semestre 1 · 2026</div><div class="card-title">Tabla de procesos</div>
+          <table class="tbl">
+            <thead><tr><th>#</th><th>Mes</th><th>Cargo</th><th>Motivo</th><th>Contratado</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Ene</td><td>Auxiliar Jurídico</td><td><span class="badge bg-blue">Crecimiento</span></td><td>Joan Carmona</td><td><span class="badge bg-green">Activo ✓</span></td></tr>
+              <tr><td>2</td><td>Ene</td><td>Auxiliar Jurídico</td><td><span class="badge bg-blue">Crecimiento</span></td><td>Lorena Bedoya</td><td><span class="badge bg-green">Activo ✓</span></td></tr>
+              <tr><td>3</td><td>Ene</td><td>Aux. Jurídico — Rplz.</td><td><span class="badge bg-red">Reemplazo</span></td><td>Carlos Santamaría</td><td><span class="badge bg-red">No superó PP</span></td></tr>
+              <tr><td>4</td><td>Mar</td><td>Aux. Adm. y Contable</td><td><span class="badge bg-blue">Crecimiento</span></td><td>Maderlys Pérez</td><td><span class="badge bg-green">Activo ✓</span></td></tr>
+              <tr><td>5</td><td>Mar</td><td>Aux. Jurídico Litigios</td><td><span class="badge bg-red">Rplz. PP</span></td><td>—</td><td><span class="badge bg-gray">Sin registro</span></td></tr>
+              <tr><td>6</td><td>Jun</td><td>Auxiliar Jurídico AJP</td><td><span class="badge bg-blue">Crecimiento</span></td><td>—</td><td><span class="badge bg-gray">Sin registro</span></td></tr>
+              <tr><td>7</td><td>Jun</td><td>Por confirmar</td><td><span class="badge bg-gray">Sin clasificar</span></td><td>María Paz Posada</td><td><span class="badge bg-amber">Pend. formalizar</span></td></tr>
+              <tr><td>8</td><td>Jun ●</td><td>Auxiliar Jurídico</td><td><span class="badge bg-red">Reemplazo</span></td><td>—</td><td><span class="badge bg-terra">En curso</span></td></tr>
+            </tbody>
+          </table>
+          <div class="note">Procesos 5 y 6: apertura confirmada sin contratado en nómina. Confirmar con Dirección Administrativa.</div>
+        </div>
+        <div>
+          <div class="card mb14">
+            <div class="card-eyebrow">Distribución</div><div class="card-title">Motivo de apertura</div>
+            <div class="chart-box" style="height:150px"><canvas id="chartMotivo"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-eyebrow">Cargos</div><div class="card-title">Más demandados</div>
+            <div class="sr"><span>Auxiliar Jurídico</span><span class="sr-val">5 procesos</span></div>
+            <div class="sr"><span>Auxiliar Administrativo</span><span class="sr-val">1 proceso</span></div>
+            <div class="sr"><span>Por confirmar</span><span class="sr-val">2 procesos</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Cronología</div><div class="card-title">Línea de tiempo — 2026</div>
+        <div class="timeline" style="margin-top:10px">
+          <div class="tl-item"><div class="tl-dot tl-green"></div><div class="tl-mes">Enero 2026</div><div class="tl-title">2 × Auxiliar Jurídico <span class="badge bg-blue" style="margin-left:6px">Crecimiento</span></div><div class="tl-desc">Joan Carmona y Lorena Bedoya · Ingreso 26 ene · Ambos activos con evaluaciones muy positivas</div></div>
+          <div class="tl-item"><div class="tl-dot tl-red"></div><div class="tl-mes">Enero → Marzo 2026</div><div class="tl-title">Auxiliar Jurídico — reemplazo Rubén Gómez <span class="badge bg-red" style="margin-left:6px">Reemplazo</span></div><div class="tl-desc">Carlos Santamaría · Ingreso 26 ene · Retiro 20 mar · <strong>No superó período de prueba</strong> · Generó reapertura del proceso</div></div>
+          <div class="tl-item"><div class="tl-dot tl-green"></div><div class="tl-mes">Marzo 2026</div><div class="tl-title">Auxiliar Administrativa y Contable <span class="badge bg-blue" style="margin-left:6px">Crecimiento</span></div><div class="tl-desc">Maderlys Pérez · Ingreso 19 mar · Activa, adaptación y motivación altas</div></div>
+          <div class="tl-item"><div class="tl-dot tl-amber"></div><div class="tl-mes">Marzo 2026 — reapertura</div><div class="tl-title">Auxiliar Jurídico Litigios <span class="badge bg-red" style="margin-left:6px">Rplz. PP</span></div><div class="tl-desc">Reabierto tras salida de Santamaría · Contratado no identificado en sistema · Pendiente confirmar</div></div>
+          <div class="tl-item"><div class="tl-dot tl-green"></div><div class="tl-mes">Junio 2026</div><div class="tl-title">Auxiliar Jurídico AJP <span class="badge bg-blue" style="margin-left:6px">Crecimiento</span></div><div class="tl-desc">Perfil especializado · Prueba técnica aplicada · Contratado pendiente de registro</div></div>
+          <div class="tl-item"><div class="tl-dot tl-amber"></div><div class="tl-mes">Junio 2026</div><div class="tl-title">María Paz Posada <span class="badge bg-gray" style="margin-left:6px">Por confirmar</span></div><div class="tl-desc">Ingreso registrado 01 jun · Sin número de contrato en sistema · Clasificación pendiente</div></div>
+          <div class="tl-item"><div class="tl-dot tl-pulse"></div><div class="tl-mes">Junio 2026 — EN CURSO</div><div class="tl-title">Auxiliar Jurídico — reemplazo Ana María Chica <span class="badge bg-terra" style="margin-left:6px">Activo</span></div><div class="tl-desc">Retirada 11 jun · Proceso abierto · Perfil: auxiliar jurídico generalista, trabajo remoto</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DESEMPEÑO ══ -->
+  <div id="desempeno" class="panel">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Evaluación de desempeño</div><div class="page-title">Primera evaluación semestral 2026</div><div class="page-sub">Ponderación: Autoevaluación 20% · Evaluación líder 80% · 10 colaboradores · Junio 2026</div></div>
+      <div class="date-badge">S1 · Jun 2026</div>
+    </div>
+    <div class="content">
+
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Supera expectativas</div><div class="kpi-value" style="color:var(--green)">2</div><div class="kpi-sub">≥ 4.5 — Pedro, Andrea V.</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--blue)"><div class="kpi-label">Cumple expectativas</div><div class="kpi-value" style="color:var(--blue)">7</div><div class="kpi-sub">3.5 – 4.4 — 7 personas</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">En desarrollo</div><div class="kpi-value" style="color:var(--amber)">1</div><div class="kpi-sub">2.5 – 3.4 — Isaac Plaza</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--navy)"><div class="kpi-label">Promedio equipo</div><div class="kpi-value">4.21</div><div class="kpi-sub">sin contar a Isaac: 4.40</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--terra)"><div class="kpi-label">Mayor brecha auto/líder</div><div class="kpi-value" style="color:var(--terra)">−1.25</div><div class="kpi-sub">Nasly Pérez</div></div>
+      </div>
+
+      <!-- Ranking -->
+      <div class="card mb14">
+        <div class="card-eyebrow">Ranking general</div>
+        <div class="card-title">Puntaje final ponderado — Primera evaluación semestral 2026</div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Colaborador</th><th>Cargo</th><th class="num">Auto 20%</th><th class="num">Líder 80%</th><th class="num">Final</th><th>Nivel</th><th>Brecha</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>🥇</td><td><strong>Pedro P. Henao</strong></td><td>Gerente / Socio</td>
+              <td class="num">4.20</td><td class="num">4.90</td><td class="num"><strong>4.76</strong></td>
+              <td><span class="badge bg-green">Supera expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:70%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--green)">+0.70</span></div></td>
+            </tr>
+            <tr>
+              <td>🥈</td><td><strong>Andrea C. Villa</strong></td><td>Dir. Administrativa</td>
+              <td class="num">4.60</td><td class="num">4.60</td><td class="num"><strong>4.60</strong></td>
+              <td><span class="badge bg-green">Supera expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:0%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--text3)">0.00</span></div></td>
+            </tr>
+            <tr>
+              <td>🥉</td><td><strong>Maderlys Pérez</strong></td><td>Aux. Administrativa</td>
+              <td class="num">4.00</td><td class="num">4.49</td><td class="num"><strong>4.39</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:49%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--green)">+0.49</span></div></td>
+            </tr>
+            <tr>
+              <td>4°</td><td>Lorena Bedoya</td><td>Auxiliar Jurídica</td>
+              <td class="num">3.48</td><td class="num">4.51</td><td class="num"><strong>4.31</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--green)">+1.03</span></div></td>
+            </tr>
+            <tr>
+              <td>5°</td><td>Zuley Padilla</td><td>Abogada AJP</td>
+              <td class="num">4.21</td><td class="num">4.30</td><td class="num"><strong>4.28</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:9%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--green)">+0.09</span></div></td>
+            </tr>
+            <tr>
+              <td>6°</td><td>Joan Carmona</td><td>Auxiliar Jurídico</td>
+              <td class="num">3.99</td><td class="num">4.34</td><td class="num"><strong>4.27</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:35%;background:var(--green)"></div></div><span class="bar-pct" style="color:var(--green)">+0.35</span></div></td>
+            </tr>
+            <tr>
+              <td>7°</td><td>Andrea Gómez</td><td>Auxiliar Jurídica</td>
+              <td class="num">4.33</td><td class="num">4.17</td><td class="num"><strong>4.20</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:16%;background:var(--red)"></div></div><span class="bar-pct" style="color:var(--red)">−0.16</span></div></td>
+            </tr>
+            <tr>
+              <td>8°</td><td>Isabel Piedrahita</td><td>Socia — PI</td>
+              <td class="num">4.70</td><td class="num">4.00</td><td class="num"><strong>4.14</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:70%;background:var(--red)"></div></div><span class="bar-pct" style="color:var(--red)">−0.70</span></div></td>
+            </tr>
+            <tr>
+              <td>9°</td><td>Nasly Pérez</td><td>Dir. Marketing</td>
+              <td class="num">5.00</td><td class="num">3.75</td><td class="num"><strong>4.00</strong></td>
+              <td><span class="badge bg-blue">Cumple expectativas</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--red)"></div></div><span class="bar-pct" style="color:var(--red)">−1.25</span></div></td>
+            </tr>
+            <tr style="background:rgba(192,57,43,.04)">
+              <td>10°</td><td><strong>Isaac Plaza</strong></td><td>Marketing BDR</td>
+              <td class="num">4.00</td><td class="num">2.80</td><td class="num"><strong style="color:var(--red)">3.04</strong></td>
+              <td><span class="badge bg-red">En desarrollo</span></td>
+              <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--red)"></div></div><span class="bar-pct" style="color:var(--red)">−1.20</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">Brecha = autoevaluación − evaluación líder. Verde: el líder ve más de lo que la persona se ve. Rojo: la persona se evalúa más alto que el líder. Joan Carmona evaluado por dos líderes (promedio). Isaac Plaza: autoevaluación ingresada manualmente.</div>
+      </div>
+
+      <!-- Gráfica + escala -->
+      <div class="grid-2">
+        <div class="card mb14">
+          <div class="card-eyebrow">Distribución</div>
+          <div class="card-title">Puntajes finales por persona</div>
+          <div class="chart-box" style="height:220px"><canvas id="chartDesempeno"></canvas></div>
+        </div>
+        <div class="card mb14">
+          <div class="card-eyebrow">Escala de calificación</div>
+          <div class="card-title">Interpretación del puntaje</div>
+          <table class="tbl" style="margin-top:4px">
+            <thead><tr><th>Rango</th><th>Nivel</th><th>Interpretación</th></tr></thead>
+            <tbody>
+              <tr><td><strong>4.5 – 5.0</strong></td><td><span class="badge bg-green">Supera expectativas</span></td><td style="font-size:11px">Desempeño sobresaliente. Referente para el equipo.</td></tr>
+              <tr><td><strong>3.5 – 4.4</strong></td><td><span class="badge bg-blue">Cumple expectativas</span></td><td style="font-size:11px">Desempeño sólido. Continuar fortaleciendo.</td></tr>
+              <tr><td><strong>2.5 – 3.4</strong></td><td><span class="badge bg-amber">En desarrollo</span></td><td style="font-size:11px">Cumple parcialmente. Requiere plan de mejora.</td></tr>
+              <tr><td><strong>1.5 – 2.4</strong></td><td><span class="badge bg-red">Por debajo</span></td><td style="font-size:11px">No cumple expectativas. Intervención prioritaria.</td></tr>
+            </tbody>
+          </table>
+          </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-eyebrow">Brechas auto vs. líder</div>
+          <div class="sr"><span>Isaac Plaza <span class="badge bg-amber" style="margin-left:4px">Mayor brecha negativa</span></span><span class="sr-val" style="color:var(--red)">−1.20 pts</span></div>
+          <div class="sr"><span>Nasly Pérez</span><span class="sr-val" style="color:var(--amber)">−1.25 pts</span></div>
+          <div class="sr"><span>Lorena Bedoya <span class="badge bg-green" style="margin-left:4px">Líder ve más</span></span><span class="sr-val" style="color:var(--green)">+1.03 pts</span></div>
+          <div class="sr"><span>Maderlys Pérez <span class="badge bg-green" style="margin-left:4px">Líder ve más</span></span><span class="sr-val" style="color:var(--green)">+0.49 pts</span></div>
+          <div class="sr"><span>Pedro P. Henao <span class="badge bg-green" style="margin-left:4px">Líder ve más</span></span><span class="sr-val" style="color:var(--green)">+0.70 pts</span></div>
+          <div class="note">Brecha + = líder evalúa mejor que la autoevaluación. Brecha − = persona se sobreevalúa respecto al líder.</div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Cultura organizacional · Espacios 1 a 1</div><div class="card-title">Hallazgos transversales</div>
+          <div class="sr"><span>🏆 Cultura cercana y respetuosa</span><span><span class="badge bg-green">Fortaleza</span></span></div>
+          <div class="sr"><span>📢 Comunicación bidireccional</span><span><span class="badge bg-red">Necesidad</span></span></div>
+          <div class="sr"><span>📋 Claridad de roles y crecimiento</span><span><span class="badge bg-amber">Oportunidad</span></span></div>
+          <div class="sr"><span>🏠 Trabajo remoto</span><span><span class="badge bg-terra">Factor de permanencia</span></span></div>
+          <div class="sr"><span>👥 Reunión mensual equipo completo</span><span><span class="badge bg-green">✓ Iniciada jun 2026</span></span></div>
+          <div class="sr"><span>📚 Plan de formación por líneas</span><span><span class="badge bg-blue">Pendiente</span></span></div>
+        </div>
+      </div>
+
+      <div class="card mb14" style="margin-top:14px">
+        <div class="card-eyebrow">Plan de desarrollo · S2 2026</div>
+        <div class="card-title">Acciones para Isaac Plaza — único colaborador En desarrollo</div>
+        <table class="tbl">
+          <thead><tr><th>Plazo</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge bg-red">Jul 2026</span></td><td>Meta semanal de prospección activa: N empresas contactadas directamente (no por pauta). Revisión quincenal con Nasly.</td></tr>
+            <tr><td><span class="badge bg-amber">Jul–Ago</span></td><td>Capacitación B2B: prospección outbound, ICP, manejo de objeciones y negociación comercial.</td></tr>
+            <tr><td><span class="badge bg-amber">Jul 2026</span></td><td>Plan de adopción Zoho CRM: campos obligatorios, métricas de pipeline diarias, revisión semanal.</td></tr>
+            <tr><td><span class="badge bg-amber">Jul–Ago</span></td><td>Capacitación en portafolio de servicios de la firma: precios, criterios, preguntas de diagnóstico.</td></tr>
+            <tr><td><span class="badge bg-gray">Ago 2026</span></td><td>Acuerdo formal de comunicación y retroalimentación periódica con Nasly (semanal/quincenal).</td></tr>
+            <tr><td><span class="badge bg-gray">Sep 2026</span></td><td>Conversación con Gerencia sobre ruta de crecimiento hacia rol comercial con criterios medibles.</td></tr>
+            <tr><td><span class="badge bg-navy">Dic 2026</span></td><td>Meta: alcanzar puntaje final ≥ 3.5 en evaluación S2 2026.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+    <!-- ══ ALERTAS ══ -->
+  <div id="alertas" class="panel">
+    <div class="page-header">
+      <div><div class="page-eyebrow">Gestión preventiva</div><div class="page-title">Alertas de permanencia</div><div class="page-sub">Personas con señales de riesgo · Acciones recomendadas · Jun 2026</div></div>
+    </div>
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi-card" style="--kpi-c:var(--red)"><div class="kpi-label">Riesgo alto</div><div class="kpi-value" style="color:var(--red)">2</div><div class="kpi-sub">Isaac · Nasly</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--amber)"><div class="kpi-label">Riesgo medio</div><div class="kpi-value" style="color:var(--amber)">2</div><div class="kpi-sub">Isabel · Zuley</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--green)"><div class="kpi-label">Sin alerta</div><div class="kpi-value" style="color:var(--green)">5</div><div class="kpi-sub">de 9 evaluados</div></div>
+        <div class="kpi-card" style="--kpi-c:var(--red)"><div class="kpi-label">Comp. mensual en riesgo</div><div class="kpi-value" style="color:var(--red)">$24.6M</div><div class="kpi-sub">suma de las 4 personas</div></div>
+      </div>
+      <div class="ac ac-red"><div class="ac-name">🔴 Isaac Plaza — BDR / Marketing · $3,750,000/mes</div><div class="ac-desc"><strong>Señal:</strong> única persona con motivación baja en el equipo.<br><strong>Causa:</strong> conflicto con estilo de liderazgo de Nasly, falta de reconocimiento y dudas sobre ruta de crecimiento hacia rol comercial.<br><strong>Necesita:</strong> conversación sobre proyección, capacitación B2B, claridad de portafolio y criterios de ascenso.<br><strong>Acción:</strong> conversación 1 a 1 con Gerencia esta semana. <span class="badge bg-red">Riesgo de salida: Alto</span></div></div>
+      <div class="ac ac-red"><div class="ac-name">🔴 Nasly Pérez Ramírez — Directora de Marketing · $6,500,000/mes</div><div class="ac-desc"><strong>Señal:</strong> todos los indicadores en nivel medio.<br><strong>Causa:</strong> incertidumbre por cambios organizacionales, sensación de soledad en procesos. Tensión bidireccional con Isaac.<br><strong>Necesita:</strong> mayor cercanía del liderazgo, claridad salarial y articulación del rol comercial.<br><strong>Acción:</strong> reunión con Gerencia esta semana + mediación con Isaac. <span class="badge bg-amber">Riesgo de salida: Medio-alto</span></div></div>
+      <div class="ac ac-amber"><div class="ac-name">🟡 Isabel Cristina Piedrahita — Socia PI · $9,500,000/mes</div><div class="ac-desc"><strong>Señal:</strong> indicadores positivos pero incertidumbre sobre condiciones de vinculación como socia y cotización a pensión.<br><strong>Necesita:</strong> formalización contractual de su participación como socia.<br><strong>Acción:</strong> formalizar acuerdo en los próximos 30 días. <span class="badge bg-amber">Riesgo de salida: Medio si no se formaliza</span></div></div>
+      <div class="ac ac-amber"><div class="ac-name">🟡 Zuley Nathalia Padilla — Abogada · $4,800,000/mes</div><div class="ac-desc"><strong>Señal:</strong> claridad de rol media y clima neutral. Ansiedad por volumen de trabajo.<br><strong>Necesita:</strong> descripción formal de cargo y criterios claros de responsabilidades.<br><strong>Acción:</strong> descripción de cargo actualizada y en socialización — jun 2026. Hacer seguimiento una vez reciba el documento formal. <span class="badge bg-green">Riesgo de salida: Bajo-medio</span></div></div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-eyebrow">Compromisos</div><div class="card-title">Plan de acción</div>
+        <table class="tbl">
+          <thead><tr><th>Persona</th><th>Prioridad</th><th>Acción</th><th>Responsable</th><th>Plazo</th></tr></thead>
+          <tbody>
+            <tr><td>Isaac Plaza</td><td><span class="badge bg-red">Alta</span></td><td>1 a 1 Gerencia + plan crecimiento comercial</td><td>Pedro P. Henao</td><td><span class="badge bg-red">Esta semana</span></td></tr>
+            <tr><td>Nasly Pérez</td><td><span class="badge bg-red">Alta</span></td><td>Reunión Gerencia + mediación con Isaac</td><td>Pedro P. Henao</td><td><span class="badge bg-red">Esta semana</span></td></tr>
+            <tr><td>Isaac + Nasly</td><td><span class="badge bg-red">Alta</span></td><td>Conversación mediada liderazgo y comunicación</td><td>Dir. Administrativa</td><td><span class="badge bg-amber">2 semanas</span></td></tr>
+            <tr><td>Isabel Piedrahita</td><td><span class="badge bg-amber">Media</span></td><td>Formalizar condiciones de vinculación como socia</td><td>Gerencia</td><td><span class="badge bg-amber">30 días</span></td></tr>
+            <tr><td>Zuley Padilla</td><td><span class="badge bg-green">Completada</span></td><td>Descripción de cargo actualizada — en socialización jun 2026</td><td>Dir. Administrativa</td><td><span class="badge bg-green">✓ Jun 2026</span></td></tr>
+            <tr><td>Equipo completo</td><td><span class="badge bg-green">En ejecución</span></td><td>Primera reunión realizada jun 2026 — continuidad mensual confirmada</td><td>Gerencia</td><td><span class="badge bg-green">✓ Mensual</span></td></tr>
+            <tr><td>Equipo — formación</td><td><span class="badge bg-terra">Programada</span></td><td>Capacitación conceptos básicos tributarios</td><td>Dir. Administrativa</td><td><span class="badge bg-terra">Últ. sem. jun 2026</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const TERRA = '#DE765D', NAVY = '#0A1B39', GREEN = '#1A9E6A';
+const AMBER = '#C47F10', RED = '#C0392B', BLUE = '#2563EB', GRAY = '#8A99AE';
+const TEXT2 = '#4A5E7A', BORDER = '#DDE1EA';
+
+Chart.defaults.color = TEXT2;
+Chart.defaults.borderColor = BORDER;
+Chart.defaults.font.family = "'Nunito Sans', Avenir, sans-serif";
+Chart.defaults.font.size = 11;
+
+new Chart(document.getElementById('chartRadar'), {
+  type: 'radar',
+  data: {
+    labels: ['Adaptación','Claridad rol','Bienestar','Motivación','Clima'],
+    datasets: [{ label:'Equipo', data:[8.9,7.8,8.9,7.4,8.6], borderColor: TERRA, backgroundColor:'rgba(222,118,93,.1)', pointBackgroundColor: TERRA, borderWidth:2, pointRadius:4 }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, scales:{ r:{ min:0, max:10, ticks:{ stepSize:2, backdropColor:'transparent', color: TEXT2 }, grid:{ color: BORDER }, angleLines:{ color: BORDER }, pointLabels:{ font:{size:11}, color: NAVY } } }, plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById('chartNivel'), {
+  type: 'doughnut',
+  data: { labels:['Dirección (3)','Jefatura (1)','Profesional (2)','Auxiliar (4)'], datasets:[{ data:[3,1,2,4], backgroundColor:[TERRA, BLUE, GREEN, AMBER], borderWidth:2, borderColor:'#fff', hoverOffset:6 }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'62%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, color: TEXT2 } } } }
+});
+
+new Chart(document.getElementById('chartRotacion'), {
+  data: {
+    labels: ['ene-25','feb-25','mar-25','abr-25','may-25','jun-25','jul-25','ago-25','sep-25','oct-25','nov-25','dic-25','ene-26','feb-26','mar-26','abr-26','may-26','jun-26'],
+    datasets: [
+      { type:'bar', label:'Salidas', data:[0,1,1,0,0,3,0,1,1,1,2,1,1,0,3,0,0,1], backgroundColor:'rgba(192,57,43,.65)', yAxisID:'y2', borderRadius:3, order:1 },
+      { type:'line', label:'Headcount', data:[14,14,14,14,15,15,14,15,14,14,13,11,12,11,14,11,11,11], borderColor: TERRA, backgroundColor:'rgba(222,118,93,.07)', fill:true, tension:.35, pointRadius:3, pointBackgroundColor: TERRA, borderWidth:2.5, yAxisID:'y1', order:0 }
+    ]
+  },
+  options: { responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, plugins:{ legend:{ labels:{ boxWidth:10, padding:16, color: TEXT2 } } }, scales:{ x:{ ticks:{ maxRotation:45, font:{size:10}, color: TEXT2 }, grid:{ color: BORDER } }, y1:{ type:'linear', position:'left', min:0, max:20, ticks:{ stepSize:5, color: TEXT2 }, grid:{ color: BORDER }, title:{ display:true, text:'Headcount', font:{size:10}, color: TEXT2 } }, y2:{ type:'linear', position:'right', min:0, max:6, ticks:{ stepSize:1, color: TEXT2 }, grid:{ display:false }, title:{ display:true, text:'Salidas', font:{size:10}, color: TEXT2 } } } }
+});
+
+new Chart(document.getElementById('chartCausa'), {
+  type:'doughnut',
+  data: { labels:['Retiro voluntario','No superó PP'], datasets:[{ data:[4,1], backgroundColor:[BLUE, RED], borderWidth:2, borderColor:'#fff' }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'58%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, color: TEXT2 } } } }
+});
+
+new Chart(document.getElementById('chartCompDonut'), {
+  type:'doughnut',
+  data: { labels:['Dirección $29.0M','Jefatura $6.5M','Profesional $8.6M','Auxiliar $10.3M'], datasets:[{ data:[29000000,6500000,8550000,11800000], backgroundColor:[TERRA, BLUE, GREEN, AMBER], borderWidth:2, borderColor:'#fff' }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:8, color: TEXT2 } }, tooltip:{ callbacks:{ label: ctx => { const v=ctx.parsed; const t=ctx.dataset.data.reduce((a,b)=>a+b,0); return ` $${(v/1e6).toFixed(1)}M (${Math.round(v/t*100)}%)`; } } } } }
+});
+
+new Chart(document.getElementById('chartDesempeno'), {
+  type: 'bar',
+  data: {
+    labels: ['Pedro H.','Andrea V.','Lorena B.','Maderlys P.','Zuley P.','Joan C.','Andrea G.','Isabel P.','Nasly P.','Isaac P.'],
+    datasets: [
+      { label: 'Autoevaluación', data:[4.20,4.60,3.48,4.00,4.21,3.99,4.33,4.70,5.00,4.00], backgroundColor:'rgba(37,99,235,.25)', borderColor:'rgba(37,99,235,.8)', borderWidth:1.5, borderRadius:3 },
+      { label: 'Líder', data:[4.90,4.60,4.51,4.49,4.30,4.34,4.17,4.00,3.75,2.80], backgroundColor:'rgba(222,118,93,.35)', borderColor:'var(--terra)', borderWidth:1.5, borderRadius:3 },
+      { label: 'Final ponderado', data:[4.76,4.60,4.31,4.39,4.28,4.27,4.20,4.14,4.00,3.04], backgroundColor:'rgba(10,27,57,.15)', borderColor:'var(--navy)', borderWidth:2, borderRadius:3, type:'line', pointRadius:4, pointBackgroundColor:NAVY }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ boxWidth:10, padding:14, color: TEXT2 } } },
+    scales:{
+      x:{ ticks:{ color: TEXT2, font:{size:10} }, grid:{ color: BORDER } },
+      y:{ min:0, max:5, ticks:{ stepSize:1, color: TEXT2 }, grid:{ color: BORDER } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartMotivo'), {
+  type:'doughnut',
+  data: { labels:['Reemplazo (5)','Crecimiento (3)'], datasets:[{ data:[5,3], backgroundColor:[RED, BLUE], borderWidth:2, borderColor:'#fff' }] },
+  options: { responsive:true, maintainAspectRatio:false, cutout:'55%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, padding:10, color: TEXT2 } } } }
+});
+
+// Desempeño bar chart
+new Chart(document.getElementById('chartDesempeno'), {
+  type: 'bar',
+  data: {
+    labels: ['Pedro', 'Andrea V.', 'Maderlys', 'Lorena', 'Zuley', 'Joan', 'Andrea G.', 'Isabel', 'Nasly', 'Isaac'],
+    datasets: [
+      {
+        label: 'Puntaje final',
+        data: [4.76, 4.60, 4.39, 4.31, 4.28, 4.27, 4.20, 4.14, 4.00, 3.04],
+        backgroundColor: [
+          'rgba(26,158,106,.8)','rgba(26,158,106,.8)',
+          'rgba(37,99,235,.7)','rgba(37,99,235,.7)','rgba(37,99,235,.7)',
+          'rgba(37,99,235,.7)','rgba(37,99,235,.7)','rgba(37,99,235,.7)',
+          'rgba(37,99,235,.7)',
+          'rgba(192,57,43,.8)'
+        ],
+        borderRadius: 4,
+        borderWidth: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' Puntaje final: ' + ctx.parsed.x.toFixed(2) + ' / 5' } }
+    },
+    scales: {
+      x: { min: 0, max: 5, ticks: { color: TEXT2, font:{size:10} }, grid: { color: BORDER },
+        afterDraw: chart => {
+          const ctx2 = chart.ctx;
+          ctx2.save();
+          [3.5, 4.5].forEach(v => {
+            const x = chart.scales.x.getPixelForValue(v);
+            ctx2.beginPath(); ctx2.moveTo(x, chart.chartArea.top); ctx2.lineTo(x, chart.chartArea.bottom);
+            ctx2.strokeStyle = v === 3.5 ? 'rgba(192,57,43,.4)' : 'rgba(26,158,106,.4)';
+            ctx2.lineWidth = 1; ctx2.setLineDash([4,3]); ctx2.stroke();
+          });
+          ctx2.restore();
+        }
+      },
+      y: { ticks: { color: TEXT2, font:{size:11} }, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
